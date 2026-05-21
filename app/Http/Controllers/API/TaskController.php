@@ -21,12 +21,17 @@ class TaskController extends Controller
         $query = auth()->user()->tasks();
 
         if($request->search){
-            $tasks = auth()->user()->tasks()->where('title', 'like', '%'.$request->search.'%')->get();
+            $query = auth()->user()->tasks()->where('title', 'like', '%'.$request->search.'%');
         }
 
         if($request->status){
-            $tasks = auth()->user()->tasks()->where('status', $request->status)->get();
+            $query = auth()->user()->tasks()->where('status', $request->status);
         }
+
+        if($request->search && $request->status)
+            {
+                $query = auth()->user()->tasks()->where('title', 'like', '%'.$request->search.'%')->where('status',$request->status);
+            }
 
         return TaskResource::collection(
             $query->latest()->paginate(10)
